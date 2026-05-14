@@ -106,20 +106,21 @@ Tổng kết & Q&A (15 phút)
 ### Prerequisites
 
 - Python 3.11+
-- [uv](https://docs.astral.sh/uv/) package manager
-- An [OpenRouter](https://openrouter.ai) API key
+- An [OpenAI](https://platform.openai.com) API key
+- `pip` package manager (or `uv` if available)
 
 ### Setup
 
 ```bash
 # Clone and install
 git clone <repo-url>
-cd legal_multiagent
-uv sync
+cd 2A202600017-DamLeVanToan-Day26-Track03-MCP
+pip install -r requirements.txt
+# or: pip install "a2a-sdk[http-server]>=0.3.0,<1.0" langgraph langchain-openai langchain-core fastapi uvicorn httpx python-dotenv pydantic
 
 # Configure environment
 cp .env.example .env
-# Edit .env with your OpenRouter API key
+# Edit .env with your OPENAI_API_KEY
 ```
 
 ### Run the Full System (Stage 5)
@@ -129,7 +130,7 @@ cp .env.example .env
 ./start_all.sh
 
 # In another terminal, send a test question
-uv run python test_client.py
+python test_client.py
 ```
 
 ### Run Individual Stage Demos
@@ -137,10 +138,10 @@ uv run python test_client.py
 No servers needed — each demo runs as a standalone script:
 
 ```bash
-uv run python stages/stage_1_direct_llm/main.py
-uv run python stages/stage_2_rag_tools/main.py
-uv run python stages/stage_3_single_agent/main.py
-uv run python stages/stage_4_multi_agent/main.py
+python stages/stage_1_direct_llm/main.py
+python stages/stage_2_rag_tools/main.py
+python stages/stage_3_single_agent/main.py
+python stages/stage_4_milti_agent/main.py
 ```
 
 ## LLM Evolution Stages
@@ -195,11 +196,11 @@ Each agent module follows the same structure:
 
 | Environment Variable | Description | Default |
 |---|---|---|
-| `OPENROUTER_API_KEY` | Your OpenRouter API key | (required) |
-| `OPENROUTER_MODEL` | Model identifier | `anthropic/claude-sonnet-4-5` |
+| `OPENAI_API_KEY` | Your OpenAI API key | (required) |
+| `OPENAI_MODEL` | Model identifier | `gpt-4o-mini` |
 | `REGISTRY_URL` | Registry service URL | `http://localhost:10000` |
 
-The model is swappable to any OpenRouter-supported model (e.g., `openai/gpt-4o`, `google/gemini-2.0-flash`).
+The model is swappable to any OpenAI-supported model (e.g., `gpt-4o`, `gpt-4.1-mini`).
 
 ## Documentation Diagrams
 

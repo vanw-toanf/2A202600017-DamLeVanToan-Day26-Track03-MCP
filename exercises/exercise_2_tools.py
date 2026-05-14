@@ -26,8 +26,17 @@ LEGAL_KNOWLEDGE = [
             "(4) cover damages. Statute of limitations is typically 4 years (UCC § 2-725)."
         ),
     },
-    # TODO: Thêm entry về luật lao động Việt Nam
-    # Gợi ý: id="labor_law", keywords=["lao động", "sa thải", ...], text="..."
+    # Bài Tập 2.1: Thêm entry về luật lao động Việt Nam
+    {
+        "id": "labor_law",
+        "keywords": ["lao động", "sa thải", "hợp đồng lao động", "labor", "termination"],
+        "text": (
+            "Theo Bộ luật Lao động Việt Nam 2019, người sử dụng lao động có thể "
+            "đơn phương chấm dứt hợp đồng trong các trường hợp: (1) người lao động "
+            "thường xuyên không hoàn thành công việc; (2) bị ốm đau, tai nạn đã điều trị "
+            "12 tháng chưa khỏi; (3) thiên tai, hỏa hoạn; (4) người lao động đủ tuổi nghỉ hưu."
+        ),
+    },
 ]
 
 
@@ -41,49 +50,58 @@ def search_legal_knowledge(query: str) -> str:
     return "Không tìm thấy thông tin liên quan."
 
 
-# TODO: Tạo tool check_statute_of_limitations
-# Gợi ý: nhận case_type (str), trả về thời hiệu khởi kiện
-# @tool
-# def check_statute_of_limitations(case_type: str) -> str:
-#     """Kiểm tra thời hiệu khởi kiện."""
-#     # YOUR CODE HERE
-#     pass
+# Bài Tập 2.2: Tool check_statute_of_limitations
+@tool
+def check_statute_of_limitations(case_type: str) -> str:
+    """Kiểm tra thời hiệu khởi kiện theo loại vụ án.
+
+    Args:
+        case_type: Loại vụ án (contract, tort, property, labor)
+    """
+    limits = {
+        "contract": "4 năm (UCC § 2-725) — tính từ ngày vi phạm xảy ra.",
+        "tort": "2-3 năm tùy bang — tính từ ngày phát hiện thiệt hại.",
+        "property": "5 năm — tính từ ngày quyền sở hữu bị xâm phạm.",
+        "labor": "1-3 năm — tùy loại khiếu nại và luật áp dụng (FLSA, NLRA).",
+    }
+    return limits.get(case_type.lower(), f"Không xác định thời hiệu cho loại vụ án: {case_type}")
 
 
 async def main():
     load_dotenv()
     llm = get_llm()
-    
-    # TODO: Thêm tool mới vào danh sách
-    tools = [search_legal_knowledge]  # Thêm check_statute_of_limitations vào đây
+
+    # Thêm cả hai tools vào danh sách
+    tools = [search_legal_knowledge, check_statute_of_limitations]
     llm_with_tools = llm.bind_tools(tools)
-    
+
     question = "Thời hiệu khởi kiện vụ vi phạm hợp đồng là bao lâu?"
-    
+
     messages = [
         SystemMessage(content="Bạn là chuyên gia pháp lý. Sử dụng tools để tra cứu thông tin."),
         HumanMessage(content=question),
     ]
-    
+
     print(f"Câu hỏi: {question}\n")
-    
+
     # First LLM call - decide which tools to use
     response = await llm_with_tools.ainvoke(messages)
     messages.append(response)
-    
+
     # Execute tools if requested
     if response.tool_calls:
         for tool_call in response.tool_calls:
             print(f"🔧 Gọi tool: {tool_call['name']}")
             tool_result = None
-            
+
             if tool_call["name"] == "search_legal_knowledge":
                 tool_result = search_legal_knowledge.invoke(tool_call["args"])
-            # TODO: Thêm xử lý cho check_statute_of_limitations
-            
+            elif tool_call["name"] == "check_statute_of_limitations":
+                tool_result = check_statute_of_limitations.invoke(tool_call["args"])
+
             if tool_result:
                 messages.append(ToolMessage(content=tool_result, tool_call_id=tool_call["id"]))
-        
+
         # Second LLM call - synthesize final answer
         final_response = await llm_with_tools.ainvoke(messages)
         print(f"\n✅ Kết quả:\n{final_response.content}")
