@@ -4,7 +4,7 @@ set -e
 # Start all Legal Multi-Agent System services
 # Registry must be first, then leaf agents, then orchestrators
 
-PYTHON=/home/vantoan/anaconda3/envs/rag/bin/python
+PYTHON=link_to_environment_python
 
 echo "Starting Registry service on port 10000..."
 $PYTHON -m registry &
