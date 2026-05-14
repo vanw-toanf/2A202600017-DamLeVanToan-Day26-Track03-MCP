@@ -113,7 +113,7 @@ Tổng kết & Q&A (15 phút)
 
 ```bash
 # Clone and install
-git clone <repo-url>
+git clone https://github.com/vanw-toanf/2A202600017-DamLeVanToan-Day26-Track03-MCP.git
 cd 2A202600017-DamLeVanToan-Day26-Track03-MCP
 pip install -r requirements.txt
 # or: pip install "a2a-sdk[http-server]>=0.3.0,<1.0" langgraph langchain-openai langchain-core fastapi uvicorn httpx python-dotenv pydantic
